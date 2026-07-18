@@ -22,12 +22,12 @@ const { writeSongIni } = require('../src/songini');
 const { packageSong } = require('../src/package');
 const { verifyTempoMap } = require('../src/verify');
 
-const HELP = `rb2chart — rekordbox beatgrid -> Clone Hero / Moonscraper tempo map
+const HELP = `moongrid — rekordbox beatgrid -> Clone Hero / Moonscraper tempo map
 
 USAGE
-  rb2chart list    [options]              List analyzed tracks with beat grids
-  rb2chart inspect <query> [options]      Show a track's beat-grid details
-  rb2chart convert <query> [options]      Convert to a Clone Hero song folder
+  moongrid list    [options]              List analyzed tracks with beat grids
+  moongrid inspect <query> [options]      Show a track's beat-grid details
+  moongrid convert <query> [options]      Convert to a Clone Hero song folder
 
 <query> matches track title/filename (case-insensitive substring), or is a
 direct path to an ANLZ .DAT file.
@@ -42,7 +42,7 @@ OPTIONS
   --out <dir>         Output song folder (default: ./<Artist - Title>).
   --name <s> --artist <s> --album <s> --genre <s> --year <s>
                       Metadata overrides for notes.chart and song.ini.
-  --charter <s>       Charter name written into the files (default: rb2chart).
+  --charter <s>       Charter name written into the files (default: moongrid).
   --chart-only        Write notes.chart + song.ini only; skip ffmpeg/audio.
   --no-anchors        Omit Moonscraper anchor (A) events.
   --dense             One BPM event per beat (no segmentation).
@@ -57,10 +57,10 @@ OPTIONS
   -h, --help          This help.
 
 EXAMPLES
-  rb2chart list
-  rb2chart convert venus
-  rb2chart convert "night owl" --xml collection.xml --out "D:\\CH\\Night Owl"
-  rb2chart convert E:\\PIONEER\\USBANLZ\\0a1\\...\\ANLZ0000.DAT --audio track.flac
+  moongrid list
+  moongrid convert venus
+  moongrid convert "night owl" --xml collection.xml --out "D:\\CH\\Night Owl"
+  moongrid convert E:\\PIONEER\\USBANLZ\\0a1\\...\\ANLZ0000.DAT --audio track.flac
 `;
 
 function parseArgv(argv) {
@@ -110,7 +110,7 @@ function parseArgv(argv) {
 }
 
 function fail(msg) {
-  console.error(`rb2chart: ${msg}`);
+  console.error(`moongrid: ${msg}`);
   process.exit(1);
 }
 
@@ -210,7 +210,7 @@ function selectTrack(args, query) {
     }
   }
 
-  if (!matches.length) fail(`no track matches "${query}" — run "rb2chart list" to see what's available`);
+  if (!matches.length) fail(`no track matches "${query}" — run "moongrid list" to see what's available`);
   if (matches.length > 1 && !args.index) {
     console.error(`"${query}" matches ${matches.length} tracks:`);
     matches.forEach((t, i) => console.error(`  ${i + 1}. ${t.displayName}`));
@@ -247,7 +247,9 @@ function cmdInspect(args, query) {
 }
 
 function sanitizeFolderName(s) {
-  return s.replace(/[<>:"/\\|?*\x00-\x1f]/g, '_').replace(/[. ]+$/, '') || 'song';
+  const clean = s.replace(/[<>:"/\\|?*\x00-\x1f]/g, '_').replace(/[. ]+$/, '') || 'song';
+  // Windows reserved device names can't be used as folder names.
+  return /^(con|prn|aux|nul|com\d|lpt\d)$/i.test(clean) ? `_${clean}` : clean;
 }
 
 function cmdConvert(args, query) {
@@ -278,7 +280,7 @@ function cmdConvert(args, query) {
     album: args.album || track.meta.album || '',
     genre: args.genre || track.meta.genre || '',
     year: args.year || track.meta.year || '',
-    charter: args.charter || 'rb2chart',
+    charter: args.charter || 'moongrid',
     musicStream: 'song.ogg',
     songLengthMs: track.durationMs ? track.durationMs + map.padMs : null,
   };

@@ -7,7 +7,7 @@ const path = require('path');
 const { packageSong } = require('../src/package');
 
 function tmpDir(t) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rb2chart-test-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'moongrid-test-'));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   return dir;
 }

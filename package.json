@@ -1,25 +1,33 @@
 {
-  "name": "rb2chart",
+  "name": "moongrid",
   "version": "0.1.0",
   "description": "Convert rekordbox beatgrids (including dynamic/variable tempo) into Clone Hero .chart tempo maps for authoring in Moonscraper",
   "license": "MIT",
   "bin": {
-    "rb2chart": "bin/rb2chart.js"
+    "moongrid": "bin/moongrid.js"
   },
   "main": "src/index.js",
   "files": [
     "bin",
     "src",
+    "docs",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "fuzz": "node test/fuzz.js"
   },
   "engines": {
     "node": ">=18"
   },
   "author": "s950tx16wasr10",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/s950tx16wasr10/moongrid.git"
+  },
+  "bugs": "https://github.com/s950tx16wasr10/moongrid/issues",
+  "homepage": "https://github.com/s950tx16wasr10/moongrid#readme",
   "keywords": [
     "rekordbox",
     "clone-hero",

@@ -15,7 +15,7 @@ function writeSongIni(meta) {
   put('album', meta.album);
   put('genre', meta.genre);
   put('year', meta.year);
-  put('charter', meta.charter || 'rb2chart');
+  put('charter', meta.charter || 'moongrid');
   put('delay', 0);
   if (meta.songLengthMs) put('song_length', Math.round(meta.songLengthMs));
   put('preview_start_time', -1);

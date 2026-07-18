@@ -1,14 +1,18 @@
-# rb2chart
+# moongrid
 
 Convert **rekordbox beatgrids** — including dynamic, variable-tempo grids — into
 **Clone Hero** `.chart` tempo maps ready for note authoring in **Moonscraper Chart
 Editor**.
 
 rekordbox's tempo analysis is excellent and its dynamic beatgrids track live
-drummers beat by beat. Moonscraper has no tempo-mapping help at all. rb2chart
+drummers beat by beat. Moonscraper has no tempo-mapping help at all. moongrid
 bridges the two: analyze the song in rekordbox (fix the grid there if needed),
 run one command, and get a Clone Hero song folder whose tempo map locks every
 beat to the audio with sub-millisecond accuracy — so you only have to place notes.
+
+**New to this? Read the [step-by-step guide](docs/GUIDE.md)** — from installing
+the tools to a playable chart, including rekordbox dynamic-analysis setup and
+troubleshooting.
 
 ## Requirements
 
@@ -19,23 +23,23 @@ beat to the audio with sub-millisecond accuracy — so you only have to place no
 - **rekordbox 6 or 7** with the track analyzed (dynamic analysis recommended for
   variable-tempo music). Tested against rekordbox 7.2.
 
-No account, no rekordbox database key, no decryption: rb2chart reads only the
+No account, no rekordbox database key, no decryption: moongrid reads only the
 unencrypted analysis files rekordbox writes on disk.
 
 ## Install
 
 ```
-npm install -g rb2chart
+npm install -g moongrid
 ```
 
-or run from a checkout: `node bin/rb2chart.js …`
+or run from a checkout: `node bin/moongrid.js …`
 
 ## Usage
 
 ```
-rb2chart list                     # what's analyzed and convertible?
-rb2chart convert venus            # convert by name match
-rb2chart convert venus --out "D:\CH Songs\Television - Venus"
+moongrid list                     # what's analyzed and convertible?
+moongrid convert venus            # convert by name match
+moongrid convert venus --out "D:\CH Songs\Television - Venus"
 ```
 
 `convert` writes a song folder containing:
@@ -50,7 +54,7 @@ Open `notes.chart` in Moonscraper, enable the metronome to sanity-check, and cha
 
 ### Where the audio path comes from
 
-rekordbox's analysis files identify tracks only by filename, so rb2chart finds
+rekordbox's analysis files identify tracks only by filename, so moongrid finds
 the actual audio through (in order):
 
 1. **rekordbox's analysis registry** (`networkAnalyze6.db`, automatic, Node 22.5+),
@@ -59,17 +63,17 @@ the actual audio through (in order):
    metadata),
 3. **`--audio <file>`** — explicit override, always wins.
 
-If none is available, rb2chart writes the chart anyway (`--chart-only` behavior)
+If none is available, moongrid writes the chart anyway (`--chart-only` behavior)
 and tells you what's missing.
 
 ### USB exports
 
-Exported a USB stick from rekordbox? Point rb2chart at it — device exports carry
+Exported a USB stick from rekordbox? Point moongrid at it — device exports carry
 full audio paths, so the audio resolves from the stick itself:
 
 ```
-rb2chart list --anlz-dir E:\PIONEER\USBANLZ
-rb2chart convert "my track" --anlz-dir E:\PIONEER\USBANLZ
+moongrid list --anlz-dir E:\PIONEER\USBANLZ
+moongrid convert "my track" --anlz-dir E:\PIONEER\USBANLZ
 ```
 
 ### Options
@@ -93,17 +97,17 @@ rb2chart convert "my track" --anlz-dir E:\PIONEER\USBANLZ
 --json             machine-readable output
 ```
 
-rb2chart refuses to overwrite an existing `notes.chart` (it may contain your
+moongrid refuses to overwrite an existing `notes.chart` (it may contain your
 charted notes) unless you pass `--force`.
 
 ## How it works (and why you can trust the sync)
 
 - rekordbox stores a **per-beat grid** (beat number in bar, time in integer
   milliseconds) in its `ANLZ0000.DAT` analysis files — far more precise than the
-  2-decimal BPMs in the XML export. rb2chart reads that grid directly.
+  2-decimal BPMs in the XML export. moongrid reads that grid directly.
 - Tempo is derived from the **beat timestamps**, not rekordbox's displayed BPM.
 - `.chart` files store tempo as integer milli-BPM. Naive rounding accumulates
-  drift over hundreds of beats; rb2chart chooses each tempo value **closed-loop**
+  drift over hundreds of beats; moongrid chooses each tempo value **closed-loop**
   so every rounding error is cancelled at the next beat. The tool then re-derives
   every beat time from the finished chart and reports the worst deviation
   (typically < 0.05 ms; it refuses to write a chart worse than 2 ms).
@@ -116,7 +120,7 @@ charted notes) unless you pass `--force`.
 - Moonscraper **anchor** events are written alongside every tempo event, so the
   map stays locked to the audio even while you edit BPMs in the editor. (Games
   ignore anchors; Moonscraper requires them paired with a BPM event, which
-  rb2chart guarantees.)
+  moongrid guarantees.)
 
 ## Limitations
 
@@ -130,7 +134,7 @@ charted notes) unless you pass `--force`.
 
 ## Verifying a conversion
 
-1. rb2chart's own check: the `precision:` line in the output is the maximum
+1. moongrid's own check: the `precision:` line in the output is the maximum
    difference between the chart's beat times and rekordbox's, across all beats.
 2. In Moonscraper: enable the metronome and spot-check intro, middle, outro.
 3. In Clone Hero: practice mode at 100 % speed.

@@ -3,7 +3,7 @@
 ## Goal
 
 Use rekordbox's beatgrid analysis (including dynamic, variable-tempo grids) as the tempo
-map for Clone Hero charts authored in Moonscraper. The tool (`rb2chart`) reads a track's
+map for Clone Hero charts authored in Moonscraper. The tool (`moongrid`) reads a track's
 rekordbox beat grid and emits a ready-to-author Clone Hero song folder:
 
 - `notes.chart` with a `[SyncTrack]` that locks every beat to the audio
@@ -107,8 +107,8 @@ Node.js CLI (Node 18+ present via Volta; no real Python on this machine — the 
 invoked as a subprocess.
 
 ```
-rb2chart list                          # scan USBANLZ, show analyzed tracks (name, BPM range, beats)
-rb2chart convert "<track name>"        # full pipeline → Clone Hero song folder
+moongrid list                          # scan USBANLZ, show analyzed tracks (name, BPM range, beats)
+moongrid convert "<track name>"        # full pipeline → Clone Hero song folder
    [--out <dir>]                       # default: Documents\Clone Hero\Songs\<Artist - Title>
    [--audio <file>]                    # override if PPTH path is stale/odd
    [--xml <collection.xml>]            # fallback input mode
@@ -130,7 +130,7 @@ Modules:
 
 - **M0 — spike (done 2026-07-18):** parsed PQTZ + PPTH from the local library with Node;
   confirmed dynamic grid data for Venus.mp3.
-- **M1 — reader + discovery:** `rb2chart list` works against the real library; handles
+- **M1 — reader + discovery:** `moongrid list` works against the real library; handles
   UTF-16 paths correctly (spike printed `?/Venus.mp3` — likely a console-encoding artifact
   or short/relative PPTH; resolve properly, with `--audio` as escape hatch).
 - **M2 — tempo map + chart writer + verify:** unit tests on synthetic grids (constant,

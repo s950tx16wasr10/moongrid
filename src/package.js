@@ -70,6 +70,12 @@ function packageSong(o) {
   }
 
   const oggPath = path.join(o.outDir, 'song.ogg');
+  if (path.resolve(o.audioPath) === path.resolve(oggPath)) {
+    throw new Error(
+      `--audio points at the output file itself (${oggPath}) — ffmpeg would corrupt it. ` +
+      'Point --audio at the original source file instead.'
+    );
+  }
   const args = ['-hide_banner', '-y', '-i', o.audioPath];
   const padMs = Math.max(0, Math.round(o.padMs || 0));
   if (padMs > 0) args.push('-af', `adelay=${padMs}:all=1`); // all=1 needs ffmpeg >= 4.2

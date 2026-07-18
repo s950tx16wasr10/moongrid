@@ -100,9 +100,13 @@ function parseCollectionXml(xml) {
  */
 function synthesizeBeats(tempos, durationMs) {
   if (!tempos || !tempos.length) return [];
+  // Malformed XML could specify absurd BPMs (a 100000-BPM region would generate
+  // millions of beats) — bound both the plausible BPM range and the total count.
+  const MAX_BEATS = 50000;
   const beats = [];
-  for (let j = 0; j < tempos.length; j++) {
+  for (let j = 0; j < tempos.length && beats.length < MAX_BEATS; j++) {
     const a = tempos[j];
+    if (!(a.bpm >= 10 && a.bpm <= 1000)) continue;
     const startMs = a.inizioSec * 1000;
     const endMs = j + 1 < tempos.length ? tempos[j + 1].inizioSec * 1000 : durationMs;
     const stepMs = 60000 / a.bpm;
@@ -110,7 +114,7 @@ function synthesizeBeats(tempos, durationMs) {
     let beatNum = ((a.battito - 1) % 4 + 4) % 4; // 0-based phase
     // Generate up to (but excluding) the next anchor; the next anchor supplies its
     // own first beat. Half-step guard avoids a duplicate when the region divides evenly.
-    for (let t = startMs; t < endMs - stepMs / 2; t += stepMs) {
+    for (let t = startMs; t < endMs - stepMs / 2 && beats.length < MAX_BEATS; t += stepMs) {
       beats.push({ beatNum: beatNum + 1, timeMs: t });
       beatNum = (beatNum + 1) % 4;
     }

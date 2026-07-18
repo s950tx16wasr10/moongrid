@@ -27,7 +27,7 @@ function writeChart(meta, syncEvents, opts = {}) {
   L.push('[Song]', '{');
   L.push(`  Name = "${esc(meta.name)}"`);
   L.push(`  Artist = "${esc(meta.artist)}"`);
-  L.push(`  Charter = "${esc(meta.charter || 'rb2chart')}"`);
+  L.push(`  Charter = "${esc(meta.charter || 'moongrid')}"`);
   L.push(`  Album = "${esc(meta.album)}"`);
   L.push(`  Year = "${esc(meta.year ? `, ${meta.year}` : '')}"`);
   L.push('  Offset = 0');

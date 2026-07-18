@@ -19,3 +19,4 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: node --test
+      - run: node test/fuzz.js 500
