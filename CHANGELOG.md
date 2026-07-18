@@ -16,3 +16,9 @@ Initial release.
 - ffmpeg packaging to Ogg Vorbis q8 + `song.ini`.
 - Built-in verification: reconstructs every beat time from the emitted chart and
   reports the maximum error; refuses to write charts off by more than 2 ms.
+- Overwrite protection: an existing `notes.chart` is never replaced without
+  `--force`.
+- Robustness: metadata sanitized against chart/ini corruption, XML parsing
+  tolerates `>` inside attribute values, corrupt ANLZ files cannot crash the
+  parser, rekordbox 5-style absolute analysis paths resolve on Windows,
+  numeric CLI options are validated.

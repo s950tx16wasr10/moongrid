@@ -53,6 +53,21 @@ test('synthesizes per-beat times from piecewise anchors', () => {
   assert.equal(beats[0].beatNum, 1);
 });
 
+test('raw ">" inside attribute values does not break parsing', () => {
+  const xml = `<DJ_PLAYLISTS Version="1,0,0"><COLLECTION>
+    <TRACK TrackID="1" Name="A > B" Comments="x>y>z"
+      Location="file://localhost/C:/tmp/a.mp3"/>
+    <TRACK TrackID="2" Name="Second" Location="file://localhost/C:/tmp/b.mp3">
+      <TEMPO Inizio="1.0" Bpm="120.00" Metro="4/4" Battito="1"/>
+    </TRACK>
+  </COLLECTION></DJ_PLAYLISTS>`;
+  const tracks = parseCollectionXml(xml);
+  assert.equal(tracks.length, 2);
+  assert.equal(tracks[0].name, 'A > B');
+  assert.equal(tracks[1].name, 'Second');
+  assert.equal(tracks[1].tempos.length, 1);
+});
+
 test('locationToPath handles URI escapes and platforms', () => {
   assert.equal(
     locationToPath('file://localhost/C:/Users/x/My%20Track.mp3').replace(/\\/g, '/'),

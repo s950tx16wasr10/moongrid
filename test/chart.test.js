@@ -38,6 +38,13 @@ test('metadata is escaped (double quotes cannot break the value)', () => {
   assert.match(text, /Name = "My 'Song'"/);
 });
 
+test('newlines in metadata cannot corrupt chart or ini', () => {
+  const text = writeChart({ ...META, name: 'Line1\nLine2' }, EVENTS);
+  assert.match(text, /Name = "Line1 Line2"/);
+  const ini = writeSongIni({ ...META, artist: 'A\r\nB' });
+  assert.match(ini, /artist = A B/);
+});
+
 test('song.ini has the essentials and delay 0', () => {
   const ini = writeSongIni({ ...META, songLengthMs: 231079 });
   assert.match(ini, /\[song\]/);

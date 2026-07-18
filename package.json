@@ -19,10 +19,7 @@
   "engines": {
     "node": ">=18"
   },
-  "repository": {
-    "type": "git",
-    "url": ""
-  },
+  "author": "s950tx16wasr10",
   "keywords": [
     "rekordbox",
     "clone-hero",

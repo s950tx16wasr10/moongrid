@@ -35,6 +35,17 @@ test('redacted path detection and filename extraction', () => {
   assert.equal(pathFilename(null), null);
 });
 
+test('odd-length PPTH path data does not crash (swap16 guard)', () => {
+  const u32 = (v) => { const b = Buffer.alloc(4); b.writeUInt32BE(v >>> 0); return b; };
+  const oddPath = Buffer.from([0x00, 0x3f, 0x00, 0x2f, 0x00]); // 5 bytes: "?/" + dangling byte
+  const ppth = Buffer.concat([
+    Buffer.from('PPTH', 'latin1'), u32(16), u32(16 + oddPath.length), u32(oddPath.length), oddPath,
+  ]);
+  const header = Buffer.concat([Buffer.from('PMAI', 'latin1'), u32(28), u32(28 + ppth.length), Buffer.alloc(16)]);
+  const parsed = parseAnlz(Buffer.concat([header, ppth]));
+  assert.equal(parsed.path, '?/');
+});
+
 test('unicode paths survive round-trip', () => {
   const buf = buildAnlz({ path: '?/Пример – ダンス.flac', beats: constantBeats(100, 4) });
   assert.equal(parseAnlz(buf).path, '?/Пример – ダンス.flac');

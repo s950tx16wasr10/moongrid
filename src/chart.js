@@ -10,7 +10,8 @@
 //                            writer only emits A alongside a B, after its B line.
 
 function esc(s) {
-  return String(s == null ? '' : s).replace(/"/g, "'");
+  // Quotes would end the value early; newlines would corrupt the line format.
+  return String(s == null ? '' : s).replace(/"/g, "'").replace(/[\r\n]+/g, ' ');
 }
 
 /**

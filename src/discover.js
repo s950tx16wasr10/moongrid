@@ -113,6 +113,7 @@ function resolveDevicePath(anlzDat, ppth) {
  * Discover tracks with beat grids.
  * @param {object} opts
  * @param {string[]} [opts.anlzDirs]  extra USBANLZ roots (e.g. "E:\\PIONEER\\USBANLZ")
+ * @param {string[]} [opts.manageDbs] extra networkAnalyze6.db paths to read
  * @param {object[]} [opts.xmlTracks] parsed rekordbox XML tracks (see rbxml.js)
  * @returns {{tracks: object[], warnings: string[]}}
  */
@@ -148,8 +149,14 @@ function discoverTracks(opts = {}) {
       };
       if (parsed.path && !isRedactedPath(parsed.path)) {
         track.audioPath = resolveDevicePath(dat, parsed.path);
-        if (!track.audioPath && path.isAbsolute(parsed.path)) {
-          try { if (fs.statSync(parsed.path).isFile()) track.audioPath = parsed.path; } catch { /* stale */ }
+        if (!track.audioPath) {
+          // rekordbox 5-era local analyses store absolute paths, on Windows in the
+          // form "/C:/Users/..." — strip the leading slash before the drive letter.
+          const m = parsed.path.match(/^\/([A-Za-z]:\/.*)$/);
+          const candidate = m ? m[1] : parsed.path;
+          if (path.isAbsolute(candidate)) {
+            try { if (fs.statSync(candidate).isFile()) track.audioPath = path.normalize(candidate); } catch { /* stale */ }
+          }
         }
       }
       byAnlz.set(key, track);
@@ -174,15 +181,15 @@ function discoverTracks(opts = {}) {
       else warnings.push(`audio file from rekordbox no longer exists: ${row.audioPath}`);
     }
   }
-  if (manageDbs.length && !manageAvailable && typeof require === 'function') {
+  if (manageDbs.length && !manageAvailable) {
     let hasSqlite = true;
     try { require('node:sqlite'); } catch { hasSqlite = false; }
-    if (!hasSqlite) {
-      warnings.push(
-        'node:sqlite unavailable (Node >= 22.5 required) — cannot read rekordbox analysis DB; ' +
+    warnings.push(hasSqlite
+      ? `could not read rekordbox analysis registry (${manageDbs.join(', ')}) — locked or ` +
+        'schema changed; audio paths must come from --xml or --audio'
+      : 'node:sqlite unavailable (Node >= 22.5 required) — cannot read rekordbox analysis DB; ' +
         'audio paths must come from --xml or --audio'
-      );
-    }
+    );
   }
 
   // Source 3: XML metadata, matched by audio filename (and duration when known).

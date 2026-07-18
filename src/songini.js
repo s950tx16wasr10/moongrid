@@ -6,7 +6,10 @@
 
 function writeSongIni(meta) {
   const L = ['[song]'];
-  const put = (k, v) => { if (v != null && v !== '') L.push(`${k} = ${v}`); };
+  const put = (k, v) => {
+    if (v == null || v === '') return;
+    L.push(`${k} = ${String(v).replace(/[\r\n]+/g, ' ')}`);
+  };
   put('name', meta.name);
   put('artist', meta.artist);
   put('album', meta.album);

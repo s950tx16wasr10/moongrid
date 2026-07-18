@@ -24,6 +24,7 @@ function ffmpegAvailable(ffmpegBin) {
  * @param {string} [o.audioPath]   source audio (required unless chartOnly)
  * @param {number} [o.padMs=0]     silence to prepend
  * @param {boolean}[o.chartOnly]
+ * @param {boolean}[o.force]       overwrite an existing notes.chart
  * @param {string} [o.ffmpegBin='ffmpeg']
  * @returns {{outDir:string, files:string[], warnings:string[]}}
  */
@@ -33,6 +34,14 @@ function packageSong(o) {
   fs.mkdirSync(o.outDir, { recursive: true });
 
   const chartPath = path.join(o.outDir, 'notes.chart');
+  // A pre-existing notes.chart may hold hours of placed notes — never clobber it
+  // silently. (song.ogg/song.ini are regenerable, notes are not.)
+  if (!o.force && fs.existsSync(chartPath)) {
+    throw new Error(
+      `${chartPath} already exists — it may contain charted notes. ` +
+      'Re-run with --force to overwrite, or use a different --out folder.'
+    );
+  }
   fs.writeFileSync(chartPath, o.chartText, 'utf8');
   files.push(chartPath);
 

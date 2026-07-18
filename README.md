@@ -85,11 +85,16 @@ rb2chart convert "my track" --anlz-dir E:\PIONEER\USBANLZ
 --dense            one BPM event per beat instead of segmented tempo regions
 --tol <ms>         segmentation tolerance (default 1.0); larger = fewer, smoother
                    BPM events, smaller = tighter tracking
---pad-min <ms>     minimum lead-in silence (default 2000)
+--pad-min <ms>     minimum total lead-in (added silence + the track's own intro)
+                   before the first beat (default 2000)
 --no-pad           never touch the audio; fit a lead-in tempo over the intro gap
+--force            overwrite an existing notes.chart in the output folder
 --index <n>        disambiguate multiple matches
 --json             machine-readable output
 ```
+
+rb2chart refuses to overwrite an existing `notes.chart` (it may contain your
+charted notes) unless you pass `--force`.
 
 ## How it works (and why you can trust the sync)
 

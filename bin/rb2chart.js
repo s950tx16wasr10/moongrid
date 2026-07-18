@@ -48,8 +48,10 @@ OPTIONS
   --dense             One BPM event per beat (no segmentation).
   --tol <ms>          Segmentation tolerance in ms (default 1.0). Lower = more
                       BPM events, tighter fit.
-  --pad-min <ms>      Minimum lead-in silence (default 2000).
+  --pad-min <ms>      Minimum total lead-in (added silence + the track's own
+                      intro) before the first beat (default 2000).
   --no-pad            Never pad audio; fit a lead-in tempo over the intro gap.
+  --force             Overwrite an existing notes.chart in the output folder.
   --index <n>         Pick the n-th match (1-based) when several tracks match.
   --json              Machine-readable output.
   -h, --help          This help.
@@ -87,12 +89,22 @@ function parseArgv(argv) {
       case '--tol': args.tol = parseFloat(next()); break;
       case '--pad-min': args.padMin = parseFloat(next()); break;
       case '--no-pad': args.noPad = true; break;
+      case '--force': args.force = true; break;
       case '--index': args.index = parseInt(next(), 10); break;
       case '--json': args.json = true; break;
       default:
         if (a.startsWith('--')) fail(`unknown option ${a} (see --help)`);
         args._.push(a);
     }
+  }
+  if (args.tol !== undefined && !(Number.isFinite(args.tol) && args.tol >= 0)) {
+    fail('--tol needs a number of milliseconds >= 0');
+  }
+  if (args.padMin !== undefined && !(Number.isFinite(args.padMin) && args.padMin >= 0)) {
+    fail('--pad-min needs a number of milliseconds >= 0');
+  }
+  if (args.index !== undefined && !(Number.isInteger(args.index) && args.index >= 1)) {
+    fail('--index needs a positive integer');
   }
   return args;
 }
@@ -254,7 +266,10 @@ function cmdConvert(args, query) {
   });
   const check = verifyTempoMap(map.events, map.resolution, map.beatTicks, map.targetTimesMs);
   if (check.maxErrMs > 2) {
-    fail(`internal error: tempo map verification failed (max error ${check.maxErrMs.toFixed(3)} ms at beat ${check.worstBeat}) — please report this`);
+    fail(map.warnings.some((w) => w.includes('clamped'))
+      ? `this track's tempo falls outside what .chart/Moonscraper can represent ` +
+        `(see warnings); max beat error would be ${check.maxErrMs.toFixed(1)} ms`
+      : `internal error: tempo map verification failed (max error ${check.maxErrMs.toFixed(3)} ms at beat ${check.worstBeat}) — please report this`);
   }
 
   const meta = {
@@ -286,6 +301,7 @@ function cmdConvert(args, query) {
     audioPath,
     padMs: map.padMs,
     chartOnly: !!args.chartOnly || (!audioPath && !args.audio),
+    force: !!args.force,
   });
   if (!audioPath && !args.chartOnly) {
     pkg.warnings.push('no audio path known for this track — wrote chart only. ' +

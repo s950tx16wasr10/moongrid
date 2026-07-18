@@ -57,13 +57,15 @@ function locationToPath(loc) {
 function parseCollectionXml(xml) {
   const tracks = [];
   // TRACK elements either self-close or wrap TEMPO/POSITION_MARK children.
-  const re = /<TRACK\b([^>]*?)(\/>|>([\s\S]*?)<\/TRACK>)/g;
+  // Attribute matching must skip quoted values (">" is legal raw inside them) and
+  // must be lazy: greedy would let a self-closing TRACK swallow its successor.
+  const re = /<TRACK\b((?:[^>"]|"[^"]*")*?)(\/>|>([\s\S]*?)<\/TRACK>)/g;
   for (const m of xml.matchAll(re)) {
     const attrs = parseAttrs(m[1]);
     if (!attrs.Location) continue; // playlist KEY references etc.
     const body = m[3] || '';
     const tempos = [];
-    for (const tm of body.matchAll(/<TEMPO\b([^>]*?)\/?>/g)) {
+    for (const tm of body.matchAll(/<TEMPO\b((?:[^>"]|"[^"]*")*?)\/?>/g)) {
       const ta = parseAttrs(tm[1]);
       const inizio = parseNum(ta.Inizio);
       const bpm = parseNum(ta.Bpm);

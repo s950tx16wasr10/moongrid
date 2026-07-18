@@ -40,7 +40,8 @@ function readPath(buf, tag) {
   const start = tag.pos + 16;
   const end = Math.min(start + lenPath, tag.pos + tag.lenTag, buf.length);
   if (end <= start) return null;
-  const raw = Buffer.from(buf.subarray(start, end));
+  let raw = Buffer.from(buf.subarray(start, end));
+  if (raw.length % 2) raw = raw.subarray(0, raw.length - 1); // swap16 requires even length
   raw.swap16(); // UTF-16BE -> UTF-16LE
   return raw.toString('utf16le').replace(/\0+$/, '');
 }
