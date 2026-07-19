@@ -7,7 +7,7 @@
 //      covers tracks analyzed since the feature appeared, and reading it needs
 //      node:sqlite (Node >= 22.5).
 //   2. Scanning the USBANLZ tree for ANLZ0000.DAT files: always works, yields the
-//      beat grid plus the PPTH path. Local libraries redact PPTH to "?/filename",
+//      beatgrid plus the PPTH path. Local libraries redact PPTH to "?/filename",
 //      device (USB) exports carry resolvable "/Contents/..." paths.
 //   3. A rekordbox collection XML export (--xml): portable metadata source
 //      (title/artist/album, audio Location, duration), matched to ANLZ tracks
@@ -110,7 +110,7 @@ function resolveDevicePath(anlzDat, ppth) {
 }
 
 /**
- * Discover tracks with beat grids.
+ * Discover tracks with beatgrids.
  * @param {object} opts
  * @param {string[]} [opts.anlzDirs]  extra USBANLZ roots (e.g. "E:\\PIONEER\\USBANLZ")
  * @param {string[]} [opts.manageDbs] extra networkAnalyze6.db paths to read
@@ -124,7 +124,7 @@ function discoverTracks(opts = {}) {
 
   const keyOf = (p) => path.normalize(p).toLowerCase();
 
-  // Source 2: scan the ANLZ trees (defines the universe of known beat grids).
+  // Source 2: scan the ANLZ trees (defines the universe of known beatgrids).
   for (const root of roots) {
     for (const dat of scanAnlzRoot(root)) {
       const key = keyOf(dat);
@@ -136,7 +136,7 @@ function discoverTracks(opts = {}) {
         warnings.push(`skipping unreadable ANLZ file ${dat}: ${e.message}`);
         continue;
       }
-      if (!parsed.beats.length) continue; // no beat grid, nothing to convert
+      if (!parsed.beats.length) continue; // no beatgrid, nothing to convert
       const track = {
         anlzDat: dat,
         beats: parsed.beats,

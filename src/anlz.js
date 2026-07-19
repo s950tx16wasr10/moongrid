@@ -5,7 +5,7 @@
 //   file:  "PMAI" u32:lenHeader u32:lenFile, then tagged sections back to back
 //   tag:   fourcc(4) u32:lenHeader u32:lenTag(total, incl. header), payload
 // Tags we consume:
-//   PQTZ  beat grid: header 0x18 bytes, then 8-byte entries
+//   PQTZ  beatgrid: header 0x18 bytes, then 8-byte entries
 //         { u16 beatNumber(1-4, 1=downbeat), u16 tempo(BPM*100), u32 time(ms) }
 //   PPTH  audio file path: u32 lenPath, then UTF-16BE string (NUL-terminated).
 //         Local libraries (rekordbox 6/7) redact the directory to "?/filename.ext";
@@ -46,7 +46,7 @@ function readPath(buf, tag) {
   return raw.toString('utf16le').replace(/\0+$/, '');
 }
 
-/** Decode the PQTZ beat grid at `tag`. Returns [{beatNum, tempoBpm, timeMs}]. */
+/** Decode the PQTZ beatgrid at `tag`. Returns [{beatNum, tempoBpm, timeMs}]. */
 function readBeatGrid(buf, tag) {
   if (tag.lenHeader < 24) return [];
   const numBeats = buf.readUInt32BE(tag.pos + 20);

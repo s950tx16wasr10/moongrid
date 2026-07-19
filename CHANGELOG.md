@@ -2,9 +2,9 @@
 
 ## 0.1.0 (unreleased)
 
-Initial release, as `moongrid` (previously working name: rb2chart).
+Initial release. Developed under the working name rb2chart.
 
-- Read beat grids from rekordbox ANLZ analysis files (local libraries and USB
+- Read beatgrids from rekordbox ANLZ analysis files (local libraries and USB
   exports), rekordbox collection XML, or a direct `.DAT` path.
 - Audio-path resolution via rekordbox's analysis registry (`networkAnalyze6.db`),
   collection XML, USB-export paths, or `--audio`.
@@ -24,7 +24,7 @@ Initial release, as `moongrid` (previously working name: rb2chart).
   numeric CLI options are validated, malformed XML tempos cannot generate
   unbounded beat lists, ffmpeg cannot be pointed at its own output file,
   Windows reserved device names are avoided in folder names.
-- Fuzz harness (`npm run fuzz`): random hostile beat grids round-tripped
+- Fuzz harness (`npm run fuzz`): random hostile beatgrids round-tripped
   through serialized chart text, ANLZ byte mutations, hostile XML tempo
   anchors; also runs (briefly) in CI.
 - Step-by-step user guide in `docs/GUIDE.md`.

@@ -1,8 +1,8 @@
 'use strict';
-// Converts a per-beat timestamp list (from a rekordbox beat grid) into a .chart
+// Converts a per-beat timestamp list (from a rekordbox beatgrid) into a .chart
 // [SyncTrack] tempo map that reproduces every beat time to sub-millisecond accuracy.
 //
-// Design notes (why, not what):
+// Design notes:
 //
 // * BPMs are derived from successive beat TIMESTAMPS, never from rekordbox's stored
 //   tempo field: timestamps are millisecond-exact, the tempo field is a 0.01-BPM
@@ -148,7 +148,7 @@ function buildTempoMap(beats, opts = {}) {
   for (let b = 0; b + 1 < boundaries.length; b++) {
     const s = boundaries[b];
     const e = boundaries[b + 1];
-    // No event at the final beat: the last segment's tempo simply carries on.
+    // No event at the final beat: the last segment's tempo carries on.
     const segBeats = e - s;
     const exactBpm = (60000 * segBeats) / (target[e] - chartTime);
     const milli = clampMilli(exactBpm, minBpm, maxBpm, warnings);
@@ -194,7 +194,7 @@ function buildTempoMap(beats, opts = {}) {
 
 function validateBeats(beats) {
   if (!Array.isArray(beats) || beats.length < 2) {
-    throw new Error('beat grid has fewer than 2 beats — nothing to convert');
+    throw new Error('beatgrid has fewer than 2 beats; nothing to convert');
   }
   for (let i = 0; i < beats.length; i++) {
     const b = beats[i];

@@ -3,7 +3,7 @@
 //   node test/fuzz.js [iterations] [seed]
 //
 // Three targets:
-//   1. Tempo-map pipeline: random hostile beat grids -> buildTempoMap ->
+//   1. Tempo-map pipeline: random hostile beatgrids -> buildTempoMap ->
 //      writeChart -> re-parse the TEXT -> verify every beat lands within 2 ms.
 //      Round-tripping through the serialized chart catches writer bugs that
 //      in-memory verification cannot.

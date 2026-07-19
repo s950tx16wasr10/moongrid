@@ -4,7 +4,7 @@
 // Audio policy: ALWAYS transcode to Ogg Vorbis q8, even when the source is already
 // ogg. Two reasons: (1) the lead-in silence pad must be baked into the audio so the
 // chart needs no offset; (2) mp3 passthrough risks the documented ~26 ms grid shift
-// from divergent LAME encoder-delay handling between decoders — rekordbox's beat
+// from divergent LAME encoder-delay handling between decoders, and rekordbox's beat
 // times are measured against rekordbox's own decode.
 
 const fs = require('fs');

@@ -1,9 +1,9 @@
 'use strict';
 // Self-verification: reconstruct each beat's audio time from the emitted SyncTrack
-// exactly the way a game/editor will (piecewise tick->seconds over B events, per
-// https://github.com/TheNathannator/GuitarGame_ChartFormats — Time-Conversions),
-// and compare against the rekordbox beat timestamps. This is the tool's proof
-// that the chart is sample-accurate before anyone plays it.
+// the way a game/editor will (piecewise tick->seconds over B events, per the
+// Time-Conversions doc in https://github.com/TheNathannator/GuitarGame_ChartFormats)
+// and compare against the rekordbox beat timestamps. The CLI rejects conversions
+// whose maximum error exceeds 2 ms.
 
 /**
  * @param {Array<{tick:number,type:string,value:number}>} events  SyncTrack events

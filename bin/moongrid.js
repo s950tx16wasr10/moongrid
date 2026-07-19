@@ -25,8 +25,8 @@ const { verifyTempoMap } = require('../src/verify');
 const HELP = `moongrid — rekordbox beatgrid -> Clone Hero / Moonscraper tempo map
 
 USAGE
-  moongrid list    [options]              List analyzed tracks with beat grids
-  moongrid inspect <query> [options]      Show a track's beat-grid details
+  moongrid list    [options]              List analyzed tracks with beatgrids
+  moongrid inspect <query> [options]      Show a track's beatgrid details
   moongrid convert <query> [options]      Convert to a Clone Hero song folder
 
 <query> matches track title/filename (case-insensitive substring), or is a
@@ -148,7 +148,7 @@ function cmdList(args) {
     })), null, 2));
   } else {
     if (!tracks.length) {
-      console.log('No analyzed tracks found. Point me at a library with --anlz-dir, or use --xml.');
+      console.log('No analyzed tracks found. Pass --anlz-dir <dir> or --xml <file>.');
     }
     for (const t of tracks) {
       const audio = t.audioPath ? '' : '  [no audio path — use --xml or --audio]';
@@ -162,7 +162,7 @@ function selectTrack(args, query) {
   // Direct ANLZ file path?
   if (/\.dat$/i.test(query) && fs.existsSync(query)) {
     const parsed = parseAnlz(fs.readFileSync(query));
-    if (!parsed.beats.length) fail(`${query} contains no beat grid (PQTZ)`);
+    if (!parsed.beats.length) fail(`${query} contains no beatgrid (PQTZ tag)`);
     return {
       anlzDat: path.resolve(query),
       beats: parsed.beats,
@@ -232,7 +232,7 @@ function cmdInspect(args, query) {
   const beats = t.beats;
   console.log(`track:      ${t.displayName}`);
   console.log(`anlz:       ${t.anlzDat || '(XML-derived)'}`);
-  console.log(`audio:      ${t.audioPath || '(unknown — pass --audio or --xml)'}`);
+  console.log(`audio:      ${t.audioPath || '(unknown; pass --audio or --xml)'}`);
   console.log(`beats:      ${beats.length}`);
   console.log(`first beat: #${beats[0].beatNum} at ${beats[0].timeMs} ms`);
   console.log(`last beat:  ${beats[beats.length - 1].timeMs} ms`);
@@ -256,9 +256,9 @@ function cmdConvert(args, query) {
   const track = selectTrack(args, query);
   if (track.xmlOnly) {
     console.error('note: converting from XML TEMPO anchors (no ANLZ analysis found); ' +
-      'beat times are ms-quantized at anchors only — ANLZ is more precise when available');
+      'ANLZ data is more precise when available');
   }
-  if (!track.beats || track.beats.length < 2) fail('track has no usable beat grid');
+  if (!track.beats || track.beats.length < 2) fail('track has no usable beatgrid');
 
   const map = buildTempoMap(track.beats, {
     padMinMs: args.padMin,
@@ -306,8 +306,8 @@ function cmdConvert(args, query) {
     force: !!args.force,
   });
   if (!audioPath && !args.chartOnly) {
-    pkg.warnings.push('no audio path known for this track — wrote chart only. ' +
-      'Pass --audio <file>, or --xml <collection.xml> so I can find it.');
+    pkg.warnings.push('no audio path known for this track; wrote chart only. ' +
+      'Pass --audio <file> or --xml <collection.xml>.');
   }
 
   const allWarnings = [...map.warnings, ...pkg.warnings];
@@ -329,7 +329,7 @@ function cmdConvert(args, query) {
   console.log(`audio pad:  ${map.padMs} ms of silence prepended`);
   console.log(`precision:  max beat error ${check.maxErrMs.toFixed(3)} ms (mean ${check.meanErrMs.toFixed(3)} ms)`);
   for (const w of allWarnings) console.error(`warning: ${w}`);
-  console.log('\nNext: open notes.chart in Moonscraper, turn on the metronome, and start placing notes.');
+  console.log('\nNext: open notes.chart in Moonscraper and check the sync with the metronome.');
 }
 
 function main() {
